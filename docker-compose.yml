@@ -1,0 +1,21 @@
+services:
+  caffeine-postgresql:
+    image: bitnami/postgresql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+    volumes:
+      - caffeine_postgres_data:/bitnami/postgresql
+  
+  caffeine-redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    command: ["redis-server"]
+
+volumes:
+  caffeine_postgres_data:
+    driver: local

@@ -1,7 +1,7 @@
 import type { IEntity } from "@roastery/beans/entity/types";
 import type { UnpackedModelsSchema } from "../schemas";
-import type { IRawModelsType } from "@roastery-capsules/models.models-type/domain/types";
+import type { IRawModels } from "./raw-models.interface";
 
-export interface IModels extends IEntity<UnpackedModelsSchema>, IRawModelsType {
+export interface IModels extends IEntity<UnpackedModelsSchema>, IRawModels {
     updateContent(value: string): void;
 }

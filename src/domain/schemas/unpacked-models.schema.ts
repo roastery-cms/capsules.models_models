@@ -1,6 +1,7 @@
-import { UnpackedModelsTypeDTO } from "@roastery-capsules/models.models-type/domain/dtos";
 import { Schema } from "@roastery/terroir/schema";
+import { UnpackedModelsDTO } from "../dtos";
 
-export const UnpackedModelsSchema = Schema.make(UnpackedModelsTypeDTO);
+export const UnpackedModelsSchema: Schema<typeof UnpackedModelsDTO> =
+    Schema.make<typeof UnpackedModelsDTO>(UnpackedModelsDTO);
 
-export type UnpackedModelsSchema = typeof UnpackedModelsTypeDTO;
+export type UnpackedModelsSchema = typeof UnpackedModelsDTO;

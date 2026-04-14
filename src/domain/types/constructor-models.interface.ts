@@ -1,6 +1,3 @@
-import type { IModelsType } from "@roastery-capsules/models.models-type/domain/types";
+import type { IRawModels } from "./raw-models.interface";
 
-export interface IConstructorModels {
-    readonly type: IModelsType;
-    readonly content: string;
-}
+export interface IConstructorModels extends IRawModels {}

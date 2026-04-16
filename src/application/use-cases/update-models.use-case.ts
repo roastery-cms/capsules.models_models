@@ -13,8 +13,8 @@ export class UpdateModelsUseCase {
         private readonly findModelsById: FindModelsByIdUseCase,
     ) {}
 
-    public async run(id: string, data: UpdateModelsDTO): Promise<IModels> {
-        if (!UpdateModelsSchema.match(data))
+    public async run(id: string, dto: UpdateModelsDTO): Promise<IModels> {
+        if (!UpdateModelsSchema.match(dto))
             throw new InvalidOperationException(
                 Models[EntitySource],
                 "At least one field must be provided for the update operation.",
@@ -22,9 +22,9 @@ export class UpdateModelsUseCase {
 
         const targetModels = await this.findModelsById.run(id);
 
-        const { content } = data;
+        const { data } = dto;
 
-        if (content) targetModels.updateContent(content);
+        if (data) targetModels.updateData(data);
 
         await this.writer.update(targetModels);
 

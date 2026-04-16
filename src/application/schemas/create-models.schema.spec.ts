@@ -12,16 +12,16 @@ describe("CreateModelsSchema", () => {
         expect(
             CreateModelsSchema.match({
                 typeId: generateUUID(),
-                content: '{"readTime":5,"language":"pt-BR"}',
+                data: '{"readTime":5,"language":"pt-BR"}',
             }),
         ).toBe(true);
     });
 
     it("should not match when typeId is missing", () => {
-        expect(CreateModelsSchema.match({ content: "{}" })).toBe(false);
+        expect(CreateModelsSchema.match({ data: "{}" })).toBe(false);
     });
 
-    it("should not match when content is missing", () => {
+    it("should not match when data is missing", () => {
         expect(CreateModelsSchema.match({ typeId: generateUUID() })).toBe(false);
     });
 
@@ -29,16 +29,16 @@ describe("CreateModelsSchema", () => {
         expect(
             CreateModelsSchema.match({
                 typeId: "not-a-uuid",
-                content: "{}",
+                data: "{}",
             }),
         ).toBe(false);
     });
 
-    it("should not match when content has less than 2 characters", () => {
+    it("should not match when data has less than 2 characters", () => {
         expect(
             CreateModelsSchema.match({
                 typeId: generateUUID(),
-                content: "{",
+                data: "{",
             }),
         ).toBe(false);
     });

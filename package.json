@@ -1,13 +1,32 @@
 {
     "name": "@roastery-capsules/models.models",
-    "description": "",
+    "description": "Models entries management capsule for the Roastery CMS ecosystem — CRUD operations, type-scoped pagination, batch loading by ids, caching, and cookie-based JWT authentication.",
     "version": "0.0.1",
     "author": {
         "name": "Alan Reis",
         "email": "alanreisanjo@gmail.com",
         "url": "https://github.com/Hoyasumii"
     },
-    "keywords": [],
+    "keywords": [
+        "roastery",
+        "roastery-cms",
+        "cms",
+        "capsule",
+        "elysia",
+        "typescript",
+        "rest-api",
+        "models",
+        "crud",
+        "schema-validation",
+        "pagination",
+        "batch",
+        "caching",
+        "prisma",
+        "redis",
+        "ddd",
+        "clean-architecture",
+        "bun"
+    ],
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -43,8 +62,9 @@
         "build": "knip && biome check --fix && tsup 'src/**/index.ts' --format cjs,esm --dts --tsconfig tsconfig.build.json --clean",
         "test:unit": "bun test --env-file=.env.testing",
         "test:coverage": "bun test --env-file=.env.testing --coverage",
+        "start:dev": "bun --watch --env-file=.env ./src/presentation/server/dev/index.mts",
         "setup": "bun run build && bun link",
-        "prepare": "husky",
+        "prepare": "husky || true",
         "knip": "knip"
     },
     "devDependencies": {
@@ -60,6 +80,7 @@
         "tsup": "^8.5.1"
     },
     "dependencies": {
+        "@elysiajs/eden": "^1.4.9",
         "@roastery-adapters/cache": "^0.0.5",
         "@roastery-adapters/models": "^0.0.4",
         "@roastery-capsules/api-docs": "^0.0.3",

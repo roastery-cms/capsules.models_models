@@ -7,7 +7,7 @@ export const UnpackedModelsDTO = t.Composite(
         t.Object(
             {
                 type: UnpackedModelsTypeDTO,
-                content: t.String({
+                data: t.String({
                     format: "json",
                     description:
                         "Serialized JSON string with the model payload, validated against the schema defined by its `type`.",
@@ -26,7 +26,6 @@ export const UnpackedModelsDTO = t.Composite(
         EntityDTO,
     ],
     {
-        description:
-            "Data transfer object used for building a models entity.",
+        description: "Data transfer object used for building a models entity.",
     },
 );

@@ -2,7 +2,7 @@ import { t } from "@roastery/terroir";
 
 export const UpdateModelsDTO = t.Object(
     {
-        content: t.Optional(
+        data: t.Optional(
             t.String({
                 format: "json",
                 description:

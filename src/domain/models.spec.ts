@@ -33,7 +33,7 @@ const makeValidProps = (
     overrides?: Partial<IConstructorModels>,
 ): IConstructorModels => ({
     type: mockModelsType(),
-    content: "{}",
+    data: "{}",
     ...overrides,
 });
 
@@ -45,23 +45,23 @@ describe("Models Entity", () => {
 
             expect(models).toBeInstanceOf(Models);
             expect(models.type).toBe(props.type);
-            expect(models.content).toBe("{}");
+            expect(models.data).toBe("{}");
             expect(models.id).toBeDefined();
             expect(models.createdAt).toBeDefined();
         });
 
-        it("should use provided content when given", () => {
+        it("should use provided data when given", () => {
             const type = mockModelsType({
                 schema: { toString: () => infoSchema } as never,
             });
             const models = Models.make(
                 makeValidProps({
                     type,
-                    content: '{"readTime":5,"language":"pt-BR"}',
+                    data: '{"readTime":5,"language":"pt-BR"}',
                 }),
             );
 
-            const parsed = JSON.parse(models.content);
+            const parsed = JSON.parse(models.data);
 
             expect(parsed).toEqual({ readTime: 5, language: "pt-BR" });
         });
@@ -74,13 +74,13 @@ describe("Models Entity", () => {
             expect(models.createdAt).toBe(entityProps.createdAt);
         });
 
-        it("should throw InvalidPropertyException for invalid content JSON", () => {
+        it("should throw InvalidPropertyException for invalid data JSON", () => {
             expect(() =>
-                Models.make(makeValidProps({ content: "not-json" })),
+                Models.make(makeValidProps({ data: "not-json" })),
             ).toThrow(InvalidPropertyException);
         });
 
-        it("should throw InvalidPropertyException when content does not match schema", () => {
+        it("should throw InvalidPropertyException when data does not match schema", () => {
             const type = mockModelsType({
                 schema: { toString: () => infoSchema } as never,
             });
@@ -89,7 +89,7 @@ describe("Models Entity", () => {
                 Models.make(
                     makeValidProps({
                         type,
-                        content: '{"readTime":"not-a-number"}',
+                        data: '{"readTime":"not-a-number"}',
                     }),
                 ),
             ).toThrow(InvalidPropertyException);
@@ -104,74 +104,74 @@ describe("Models Entity", () => {
                 Models.make(
                     makeValidProps({
                         type,
-                        content: '{"readTime":5}',
+                        data: '{"readTime":5}',
                     }),
                 ),
             ).toThrow(InvalidPropertyException);
         });
     });
 
-    describe("updateContent", () => {
-        it("should update the content", () => {
+    describe("updateData", () => {
+        it("should update the data", () => {
             const type = mockModelsType({
                 schema: { toString: () => infoSchema } as never,
             });
             const models = Models.make(
                 makeValidProps({
                     type,
-                    content: '{"readTime":5,"language":"pt-BR"}',
+                    data: '{"readTime":5,"language":"pt-BR"}',
                 }),
             ) as Models;
 
-            models.updateContent('{"readTime":10,"language":"en-US"}');
+            models.updateData('{"readTime":10,"language":"en-US"}');
 
-            const parsed = JSON.parse(models.content);
+            const parsed = JSON.parse(models.data);
 
             expect(parsed).toEqual({ readTime: 10, language: "en-US" });
         });
 
-        it("should set updatedAt after updateContent", () => {
+        it("should set updatedAt after updateData", () => {
             const models = Models.make(makeValidProps()) as Models;
 
-            models.updateContent("{}");
+            models.updateData("{}");
 
             expect(models.updatedAt).toBeDefined();
         });
 
-        it("should invalidate content cache after update", () => {
+        it("should invalidate data cache after update", () => {
             const models = Models.make(
-                makeValidProps({ content: '{"a":1}' }),
+                makeValidProps({ data: '{"a":1}' }),
             ) as Models;
 
-            // access content to populate cache
-            const _cached = models.content;
+            // access data to populate cache
+            const _cached = models.data;
 
-            models.updateContent('{"b":2}');
+            models.updateData('{"b":2}');
 
-            expect(JSON.parse(models.content)).toEqual({ b: 2 });
+            expect(JSON.parse(models.data)).toEqual({ b: 2 });
         });
 
         it("should throw InvalidPropertyException for invalid JSON", () => {
             const models = Models.make(makeValidProps()) as Models;
 
-            expect(() => models.updateContent("not-json")).toThrow(
+            expect(() => models.updateData("not-json")).toThrow(
                 InvalidPropertyException,
             );
         });
 
-        it("should throw InvalidPropertyException when content does not match schema", () => {
+        it("should throw InvalidPropertyException when data does not match schema", () => {
             const type = mockModelsType({
                 schema: { toString: () => infoSchema } as never,
             });
             const models = Models.make(
                 makeValidProps({
                     type,
-                    content: '{"readTime":5,"language":"pt-BR"}',
+                    data: '{"readTime":5,"language":"pt-BR"}',
                 }),
             ) as Models;
 
             expect(() =>
-                models.updateContent('{"readTime":"not-a-number"}'),
+                models.updateData('{"readTime":"not-a-number"}'),
             ).toThrow(InvalidPropertyException);
         });
     });
@@ -184,18 +184,18 @@ describe("Models Entity", () => {
             expect(models.type).toBe(type);
         });
 
-        it("should return content as serialized JSON string", () => {
+        it("should return data as serialized JSON string", () => {
             const type = mockModelsType({
                 schema: { toString: () => infoSchema } as never,
             });
             const models = Models.make(
                 makeValidProps({
                     type,
-                    content: '{"readTime":5,"language":"pt-BR"}',
+                    data: '{"readTime":5,"language":"pt-BR"}',
                 }),
             );
 
-            const parsed = JSON.parse(models.content);
+            const parsed = JSON.parse(models.data);
 
             expect(parsed).toEqual({ readTime: 5, language: "pt-BR" });
         });

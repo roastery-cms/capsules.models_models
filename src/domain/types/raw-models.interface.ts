@@ -2,5 +2,5 @@ import type { IModelsType } from "@roastery-capsules/models.models-type/domain/t
 
 export interface IRawModels {
     readonly type: IModelsType;
-    readonly content: string;
+    readonly data: string;
 }

@@ -1,36 +1,36 @@
-# @roastery-capsules/models.models-type
+# @roastery-capsules/models.models
 
-Models type management capsule for the [Roastery CMS](https://github.com/roastery-cms) ecosystem.
+Models entries management capsule for the [Roastery CMS](https://github.com/roastery-cms) ecosystem — CRUD operations, type-scoped pagination, batch loading by ids, caching, and cookie-based JWT authentication.
 
 [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 
 ## Overview
 
-**@roastery-capsules/models.models-type** is an [Elysia](https://elysiajs.com) capsule that provides full CRUD management for models types, including TypeBox schema definition, automatic slug generation, uniqueness validation, pagination, and optional Redis caching.
+**@roastery-capsules/models.models** is an [Elysia](https://elysiajs.com) capsule that exposes the `Models` aggregate: entries whose `data` is a JSON payload validated at creation and update time against the TypeBox schema declared by their associated `ModelsType`.
 
-It exposes `ModelsTypeRoutes`, an Elysia plugin ready to be mounted in your application, with the following endpoints:
+The capsule can be used in two modes:
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/models-types/` | Required | Create a new models type |
-| `GET` | `/models-types/` | Public | List models types (paginated) |
-| `GET` | `/models-types/:id-or-slug` | Public | Get models type by ID or slug |
-| `PATCH` | `/models-types/:id-or-slug` | Required | Update a models type |
-| `DELETE` | `/models-types/:id-or-slug` | Required | Delete a models type |
+- **Standalone microservice** — `bun run start:dev` spins up a server that mounts both `/models` (this capsule) and `/models-types` (the sibling capsule `@roastery-capsules/models.models-type`) in the same process, so a single binary can serve the whole Models domain.
+- **Elysia plugin** — mount only `ModelsRoutes` in a host application and wire in your own `ModelsType` service (remote or in-process).
+
+## Architecture
+
+```
+src/
+├── domain/          # Models entity, value objects, repository interfaces
+├── application/     # Use cases (Create, Find, FindMany*, Update, Delete, Count) and DTOs
+├── infra/           # Repository implementations (Prisma, In-memory, Cached, Api) and factories
+└── presentation/    # Controllers, routes, plugins, tags, and dev bootstrap
+```
 
 ## Technologies
 
 | Tool | Purpose |
 |------|---------|
-| [Elysia](https://elysiajs.com) | HTTP framework and plugin target |
-| [@roastery/barista](https://github.com/roastery-cms) | Elysia application factory |
-| [@roastery/terroir](https://github.com/roastery-cms) | Runtime schema validation and exception handling |
-| [@roastery/beans](https://github.com/roastery-cms) | Domain entity base class |
-| [@roastery/seedbed](https://github.com/roastery-cms) | Repository and use-case contracts |
-| [@roastery-adapters/models](https://github.com/roastery-cms) | Prisma models repository adapter |
-| [@roastery-adapters/cache](https://github.com/roastery-cms) | Redis caching adapter |
-| [@roastery-capsules/auth](https://github.com/roastery-cms) | Authentication plugin |
-| [Prisma](https://www.prisma.io) | ORM for data persistence |
+| [Elysia](https://elysiajs.com) | HTTP framework (via `@roastery/barista`) |
+| [Prisma](https://www.prisma.io) | ORM for PostgreSQL (via `@roastery-adapters/models`) |
+| [Redis](https://redis.io) | Caching layer (via `@roastery-adapters/cache`) |
+| [Eden Treaty](https://elysiajs.com/eden/treaty) | Type-safe client used by `ApiModelsTypeRepository` |
 | [tsup](https://tsup.egoist.dev) | Bundling to ESM + CJS with `.d.ts` generation |
 | [Bun](https://bun.sh) | Runtime, test runner, and package manager |
 | [Knip](https://knip.dev) | Unused exports and dependency detection |
@@ -39,92 +39,161 @@ It exposes `ModelsTypeRoutes`, an Elysia plugin ready to be mounted in your appl
 ## Installation
 
 ```bash
-bun add @roastery-capsules/models.models-type
+bun add @roastery-capsules/models.models
 ```
 
-**Peer dependencies** (install alongside):
+---
 
-```bash
-bun add @types/bun tsup typescript
+## API
+
+All routes are prefixed with `/models`.
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/models/` | Create a new models entry | Yes |
+| `GET` | `/models/` | List entries scoped to a models type (paginated) | No |
+| `GET` | `/models/by-ids` | Batch-load entries by a CSV of UUIDs | No |
+| `GET` | `/models/:id` | Find a models entry by id | No |
+| `PATCH` | `/models/:id` | Update a models entry | Yes |
+| `DELETE` | `/models/:id` | Delete a models entry | Yes |
+
+When the capsule is started as a standalone microservice, the same binary also exposes the full `/models-types` CRUD from `@roastery-capsules/models.models-type`, so you can manage the schema catalog without running a second service.
+
+### Query parameters
+
+| Parameter | Endpoint | Type | Description |
+|-----------|----------|------|-------------|
+| `page` | `GET /models/` | `number` | Page number (defaults to `1`) |
+| `typeId` | `GET /models/` | `uuid` | **Required** — scopes results to a single models type |
+| `ids` | `GET /models/by-ids` | `string` | Comma-separated list of UUIDs (e.g. `id1,id2,id3`) |
+
+### Response headers
+
+| Header | Description |
+|--------|-------------|
+| `X-Total-Count` | Total number of entries for the requested `typeId` |
+| `X-Total-Pages` | Total pages available for the requested `typeId` |
+
+### Authentication
+
+Protected endpoints require cookie-based JWT authentication. The login endpoint (`POST /auth/login`) sets an HTTP cookie with the JWT token — no `Authorization: Bearer` header is needed. Subsequent requests to protected routes must include this cookie.
+
+```typescript
+// Login returns Set-Cookie header
+const response = await api.auth.login.post({ email, password });
+
+// Cookies are automatically sent in subsequent requests (browser)
+// or manually forwarded:
+const cookies = response.headers.getSetCookie();
+await api.models.post(body, {
+  headers: { cookie: cookies.join("; ") },
+});
 ```
 
 ---
 
 ## Usage
 
-```typescript
-import { Elysia } from 'elysia';
-import { ModelsTypeRoutes } from '@roastery-capsules/models.models-type/presentation';
+### As a standalone microservice
 
-const app = new Elysia()
-  .use(ModelsTypeRoutes({ repository }))
-  .listen(3000);
+```bash
+bun run start:dev
 ```
 
-### Models type entity
+### As a plugin in another Roastery app
 
-Each `ModelsType` has the following properties:
+```typescript
+import { ModelsRoutes } from "@roastery-capsules/models.models/presentation/routes";
+
+app.use(
+  ModelsRoutes({
+    cacheProvider: "REDIS",
+    jwtSecret: JWT_SECRET,
+    modelsRepository,
+    modelsTypeRepository,
+    redisUrl: REDIS_URL,
+  }),
+);
+```
+
+`modelsTypeRepository` only needs to implement `findById(id): Promise<IModelsType | null>` — it can be a remote client (`ApiModelsTypeRepository`) or an in-memory stub.
+
+### Models entity
+
+Each `Models` entry has the following properties:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | `string` | Display name (e.g. `"Review"`, `"Product"`) |
-| `slug` | `string` | URL-friendly identifier (auto-generated from name) |
-| `description` | `string` | Brief description of the models type |
-| `schema` | `string` | Serialized TypeBox schema defining the content structure |
+| `type` | `IModelsType` | The models type that defines the expected schema for `data` |
+| `data` | `string` | JSON-serialized payload validated against `type.schema` via `ValidInfoVO` |
 
-### Creating a models type
+### Creating a models entry
 
 ```http
-POST /models-types/
+POST /models/
 Content-Type: application/json
-Authorization: Bearer <token>
 
 {
-  "name": "Review",
-  "description": "A review written by a user about a product.",
-  "schema": "<serialized TypeBox schema via SchemaManager>"
+  "typeId": "550e8400-e29b-41d4-a716-446655440000",
+  "data": "{\"name\":\"Alan\",\"age\":22}"
 }
 ```
 
-### Listing models types
+### Listing entries for a type
 
 ```http
-GET /models-types/?page=1
+GET /models/?page=1&typeId=550e8400-e29b-41d4-a716-446655440000
 ```
 
-### Getting a models type by ID or slug
+### Batch loading by ids
 
 ```http
-GET /models-types/review
-GET /models-types/<uuid>
+GET /models/by-ids?ids=550e8400-e29b-41d4-a716-446655440000,123e4567-e89b-12d3-a456-426614174000
 ```
 
-### Updating a models type
+### Updating an entry
 
 ```http
-PATCH /models-types/review?update-slug=true
+PATCH /models/550e8400-e29b-41d4-a716-446655440000
 Content-Type: application/json
-Authorization: Bearer <token>
 
 {
-  "name": "Book Review",
-  "description": "A review about a book."
+  "data": "{\"name\":\"Alan\",\"age\":23}"
 }
 ```
 
-### Deleting a models type
+### Deleting an entry
 
 ```http
-DELETE /models-types/review
-Authorization: Bearer <token>
+DELETE /models/550e8400-e29b-41d4-a716-446655440000
 ```
+
+---
+
+## Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NODE_ENV` | Yes | `DEVELOPMENT`, `TESTING` or `PRODUCTION` |
+| `PORT` | Yes | Server port |
+| `JWT_SECRET` | Yes | Secret for JWT signing |
+| `AUTH_EMAIL` | Yes | Admin email for authentication |
+| `AUTH_PASSWORD` | Yes | Admin password for authentication |
+| `DATABASE_PROVIDER` | No | `PRISMA` or `MEMORY` (default: `MEMORY`) |
+| `DATABASE_URL` | No | PostgreSQL connection string (required if `PRISMA`) |
+| `CACHE_PROVIDER` | No | `REDIS` or `MEMORY` (default: `MEMORY`) |
+| `REDIS_URL` | No | Redis connection string (required if `REDIS`) |
+| `MODELS_TYPE_BASE_URL` | No | External `models-type` service URL (when unset, falls back to an in-memory consumer repository) |
 
 ---
 
 ## Development
 
 ```bash
-# Run tests
+# Start dev server with hot reload
+bun run start:dev
+
+# Run unit tests
 bun run test:unit
 
 # Run tests with coverage

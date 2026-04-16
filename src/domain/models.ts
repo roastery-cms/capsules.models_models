@@ -21,16 +21,19 @@ export class Models extends Entity<UnpackedModelsSchema> implements IModels {
         UnpackedModelsSchema;
 
     private _type: IModelsType;
-    private _content: ValidInfoVO;
+    private _data: ValidInfoVO;
 
-    private constructor({ content, type }: IRawModels, entityProps: EntityDTO) {
+    private constructor(
+        { data, type }: IRawModels,
+        entityProps: EntityDTO,
+    ) {
         super(entityProps);
         this[EntityStorage].set("schema", type.schema.toString());
 
         this._type = type;
-        this._content = ValidInfoVO.make(
-            content,
-            this[EntityContext]("content"),
+        this._data = ValidInfoVO.make(
+            data,
+            this[EntityContext]("data"),
             this[EntityStorage].get("schema")!,
         );
     }
@@ -43,12 +46,12 @@ export class Models extends Entity<UnpackedModelsSchema> implements IModels {
     }
 
     @AutoUpdate
-    updateContent(value: string): void {
-        this[EntityStorage].del("content");
+    updateData(value: string): void {
+        this[EntityStorage].del("data");
 
-        this._content = ValidInfoVO.make(
+        this._data = ValidInfoVO.make(
             value,
-            this[EntityContext]("content"),
+            this[EntityContext]("data"),
             this[EntityStorage].get("schema")!,
         );
     }
@@ -57,16 +60,16 @@ export class Models extends Entity<UnpackedModelsSchema> implements IModels {
         return this._type;
     }
 
-    get content(): string {
+    get data(): string {
         return (
-            this[EntityStorage].get("content") ??
+            this[EntityStorage].get("data") ??
             (() => {
                 this[EntityStorage].set(
-                    "content",
-                    JSON.stringify(this._content.value),
+                    "data",
+                    JSON.stringify(this._data.value),
                 );
 
-                return this[EntityStorage].get("content")!;
+                return this[EntityStorage].get("data")!;
             })()
         );
     }

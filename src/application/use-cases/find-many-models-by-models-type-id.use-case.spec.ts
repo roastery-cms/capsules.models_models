@@ -30,7 +30,7 @@ const mockModelsType = (overrides?: Partial<IModelsType>): IModelsType =>
 const makeModels = (overrides?: Partial<IConstructorModels>): IModels =>
     Models.make({
         type: mockModelsType(),
-        content: "{}",
+        data: "{}",
         ...overrides,
     });
 
@@ -69,9 +69,8 @@ describe("FindManyModelsByModelsTypeIdUseCase", () => {
     it("should default to page 1 when no page is provided", async () => {
         const type = mockModelsType({ id: "type-a" });
         typeRepository.seed([type]);
-        const entities = Array.from(
-            { length: MAX_ITEMS_PER_QUERY + 3 },
-            () => makeModels({ type }),
+        const entities = Array.from({ length: MAX_ITEMS_PER_QUERY + 3 }, () =>
+            makeModels({ type }),
         );
         modelsRepository.seed(entities);
 
@@ -83,9 +82,8 @@ describe("FindManyModelsByModelsTypeIdUseCase", () => {
     it("should paginate to the requested page", async () => {
         const type = mockModelsType({ id: "type-a" });
         typeRepository.seed([type]);
-        const entities = Array.from(
-            { length: MAX_ITEMS_PER_QUERY + 3 },
-            () => makeModels({ type }),
+        const entities = Array.from({ length: MAX_ITEMS_PER_QUERY + 3 }, () =>
+            makeModels({ type }),
         );
         modelsRepository.seed(entities);
 

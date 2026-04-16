@@ -10,10 +10,10 @@ export class CreateModelsUseCase {
         private readonly findModelsType: FindModelsTypeService,
     ) {}
 
-    public async run({ content, typeId }: CreateModelsDTO): Promise<IModels> {
+    public async run({ data, typeId }: CreateModelsDTO): Promise<IModels> {
         const type = await this.findModelsType.run(typeId);
 
-        const targetModels = Models.make({ content, type });
+        const targetModels = Models.make({ data, type });
 
         await this.writer.create(targetModels);
 

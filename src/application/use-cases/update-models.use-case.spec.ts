@@ -36,7 +36,7 @@ const mockModelsType = (overrides?: Partial<IModelsType>): IModelsType =>
 const makeModels = (overrides?: Partial<IConstructorModels>): IModels =>
     Models.make({
         type: mockModelsType(),
-        content: '{"readTime":5,"language":"pt-BR"}',
+        data: '{"readTime":5,"language":"pt-BR"}',
         ...overrides,
     });
 
@@ -50,15 +50,15 @@ describe("UpdateModelsUseCase", () => {
         useCase = new UpdateModelsUseCase(repository, findModelsById);
     });
 
-    it("should update the content", async () => {
+    it("should update the data", async () => {
         const models = makeModels();
         repository.seed([models]);
 
         const updated = await useCase.run(models.id, {
-            content: '{"readTime":10,"language":"en-US"}',
+            data: '{"readTime":10,"language":"en-US"}',
         });
 
-        expect(JSON.parse(updated.content)).toEqual({
+        expect(JSON.parse(updated.data)).toEqual({
             readTime: 10,
             language: "en-US",
         });
@@ -69,7 +69,7 @@ describe("UpdateModelsUseCase", () => {
         repository.seed([models]);
 
         const updated = await useCase.run(models.id, {
-            content: '{"readTime":10,"language":"en-US"}',
+            data: '{"readTime":10,"language":"en-US"}',
         });
 
         expect(updated.updatedAt).toBeString();
@@ -84,11 +84,11 @@ describe("UpdateModelsUseCase", () => {
         );
     });
 
-    it("should throw InvalidOperationException when content fails schema validation", async () => {
+    it("should throw InvalidOperationException when data fails schema validation", async () => {
         const models = makeModels();
         repository.seed([models]);
 
-        expect(useCase.run(models.id, { content: "" })).rejects.toBeInstanceOf(
+        expect(useCase.run(models.id, { data: "" })).rejects.toBeInstanceOf(
             InvalidOperationException,
         );
     });
@@ -96,17 +96,17 @@ describe("UpdateModelsUseCase", () => {
     it("should throw ResourceNotFoundException when the entity does not exist", async () => {
         expect(
             useCase.run("non-existent", {
-                content: '{"readTime":10,"language":"en-US"}',
+                data: '{"readTime":10,"language":"en-US"}',
             }),
         ).rejects.toBeInstanceOf(ResourceNotFoundException);
     });
 
-    it("should throw InvalidPropertyException when content does not match the type schema", async () => {
+    it("should throw InvalidPropertyException when data does not match the type schema", async () => {
         const models = makeModels();
         repository.seed([models]);
 
         expect(
-            useCase.run(models.id, { content: '{"readTime":"oops"}' }),
+            useCase.run(models.id, { data: '{"readTime":"oops"}' }),
         ).rejects.toBeInstanceOf(InvalidPropertyException);
     });
 });

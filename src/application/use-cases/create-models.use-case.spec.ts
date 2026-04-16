@@ -40,10 +40,10 @@ describe("CreateModelsUseCase", () => {
         const type = mockModelsType({ id: "type-a" });
         typeRepository.seed([type]);
 
-        const result = await useCase.run({ typeId: "type-a", content: "{}" });
+        const result = await useCase.run({ typeId: "type-a", data: "{}" });
 
         expect(result.type).toBe(type);
-        expect(result.content).toBe("{}");
+        expect(result.data).toBe("{}");
         expect(modelsRepository.count()).toBe(1);
     });
 
@@ -51,23 +51,23 @@ describe("CreateModelsUseCase", () => {
         const type = mockModelsType({ id: "type-a" });
         typeRepository.seed([type]);
 
-        const result = await useCase.run({ typeId: "type-a", content: "{}" });
+        const result = await useCase.run({ typeId: "type-a", data: "{}" });
 
         expect(result.id).toBeString();
     });
 
     it("should throw ResourceNotFoundException when the models type does not exist", async () => {
         expect(
-            useCase.run({ typeId: "non-existent", content: "{}" }),
+            useCase.run({ typeId: "non-existent", data: "{}" }),
         ).rejects.toBeInstanceOf(ResourceNotFoundException);
     });
 
-    it("should throw InvalidPropertyException when content is invalid JSON", async () => {
+    it("should throw InvalidPropertyException when data is invalid JSON", async () => {
         const type = mockModelsType({ id: "type-a" });
         typeRepository.seed([type]);
 
         expect(
-            useCase.run({ typeId: "type-a", content: "not-json" }),
+            useCase.run({ typeId: "type-a", data: "not-json" }),
         ).rejects.toBeInstanceOf(InvalidPropertyException);
     });
 });

@@ -8,7 +8,7 @@ describe("CreateModelsDTO", () => {
 
     const makeValidDTO = () => ({
         typeId: generateUUID(),
-        content: '{"readTime":5,"language":"pt-BR"}',
+        data: '{"readTime":5,"language":"pt-BR"}',
     });
 
     it("should validate a complete valid DTO", () => {
@@ -26,25 +26,25 @@ describe("CreateModelsDTO", () => {
         );
     });
 
-    it("should invalidate when content is missing", () => {
-        const { content, ...rest } = makeValidDTO();
+    it("should invalidate when data is missing", () => {
+        const { data, ...rest } = makeValidDTO();
         expect(validator.match(rest)).toBe(false);
     });
 
-    it("should invalidate when content is empty", () => {
-        expect(validator.match({ ...makeValidDTO(), content: "" })).toBe(false);
+    it("should invalidate when data is empty", () => {
+        expect(validator.match({ ...makeValidDTO(), data: "" })).toBe(false);
     });
 
-    it("should invalidate when content has only one character", () => {
-        expect(validator.match({ ...makeValidDTO(), content: "{" })).toBe(false);
+    it("should invalidate when data has only one character", () => {
+        expect(validator.match({ ...makeValidDTO(), data: "{" })).toBe(false);
     });
 
-    it("should validate when content has minimum length of 2", () => {
-        expect(validator.match({ ...makeValidDTO(), content: "{}" })).toBe(true);
+    it("should validate when data has minimum length of 2", () => {
+        expect(validator.match({ ...makeValidDTO(), data: "{}" })).toBe(true);
     });
 
-    it("should invalidate when content is not a string", () => {
-        expect(validator.match({ ...makeValidDTO(), content: 123 })).toBe(false);
+    it("should invalidate when data is not a string", () => {
+        expect(validator.match({ ...makeValidDTO(), data: 123 })).toBe(false);
     });
 
     it("should invalidate non-object values", () => {

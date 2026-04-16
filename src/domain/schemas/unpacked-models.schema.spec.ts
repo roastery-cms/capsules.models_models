@@ -15,7 +15,7 @@ describe("UnpackedModelsSchema", () => {
     const makeValidData = () => ({
         id: generateUUID(),
         type: makeValidModelsType(),
-        content: '{"readTime":5,"language":"pt-BR"}',
+        data: '{"readTime":5,"language":"pt-BR"}',
         createdAt: new Date().toISOString(),
     });
 
@@ -37,15 +37,15 @@ describe("UnpackedModelsSchema", () => {
         expect(UnpackedModelsSchema.match(rest)).toBe(false);
     });
 
-    it("should invalidate when content is empty", () => {
+    it("should invalidate when data is empty", () => {
         expect(
-            UnpackedModelsSchema.match({ ...makeValidData(), content: "" }),
+            UnpackedModelsSchema.match({ ...makeValidData(), data: "" }),
         ).toBe(false);
     });
 
-    it("should invalidate when content has only one character", () => {
+    it("should invalidate when data has only one character", () => {
         expect(
-            UnpackedModelsSchema.match({ ...makeValidData(), content: "{" }),
+            UnpackedModelsSchema.match({ ...makeValidData(), data: "{" }),
         ).toBe(false);
     });
 

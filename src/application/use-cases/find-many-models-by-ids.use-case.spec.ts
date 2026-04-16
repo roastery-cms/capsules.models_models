@@ -25,7 +25,7 @@ const mockModelsType = (overrides?: Partial<IModelsType>): IModelsType =>
 const makeModels = (overrides?: Partial<IConstructorModels>): IModels =>
     Models.make({
         type: mockModelsType(),
-        content: "{}",
+        data: "{}",
         ...overrides,
     });
 

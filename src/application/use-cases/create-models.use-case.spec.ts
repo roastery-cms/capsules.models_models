@@ -11,63 +11,63 @@ import { CreateModelsUseCase } from "./create-models.use-case";
 const emptySchema = JSON.stringify(t.Object({}));
 
 const mockModelsType = (overrides?: Partial<IModelsType>): IModelsType =>
-    ({
-        id: "type-id",
-        name: "Article",
-        slug: "article",
-        description: "An article model",
-        schema: { toString: () => emptySchema },
-        createdAt: new Date().toISOString(),
-        rename() {},
-        reslug() {},
-        changeDescription() {},
-        ...overrides,
-    }) as IModelsType;
+	({
+		id: "type-id",
+		name: "Article",
+		slug: "article",
+		description: "An article model",
+		schema: { toString: () => emptySchema },
+		createdAt: new Date().toISOString(),
+		rename() {},
+		reslug() {},
+		changeDescription() {},
+		...overrides,
+	}) as IModelsType;
 
 describe("CreateModelsUseCase", () => {
-    let modelsRepository: ModelsRepository;
-    let typeRepository: ModelsTypeRepository;
-    let useCase: CreateModelsUseCase;
+	let modelsRepository: ModelsRepository;
+	let typeRepository: ModelsTypeRepository;
+	let useCase: CreateModelsUseCase;
 
-    beforeEach(() => {
-        modelsRepository = new ModelsRepository();
-        typeRepository = new ModelsTypeRepository();
-        const findModelsType = new FindModelsTypeService(typeRepository);
-        useCase = new CreateModelsUseCase(modelsRepository, findModelsType);
-    });
+	beforeEach(() => {
+		modelsRepository = new ModelsRepository();
+		typeRepository = new ModelsTypeRepository();
+		const findModelsType = new FindModelsTypeService(typeRepository);
+		useCase = new CreateModelsUseCase(modelsRepository, findModelsType);
+	});
 
-    it("should create a models entity and persist it", async () => {
-        const type = mockModelsType({ id: "type-a" });
-        typeRepository.seed([type]);
+	it("should create a models entity and persist it", async () => {
+		const type = mockModelsType({ id: "type-a" });
+		typeRepository.seed([type]);
 
-        const result = await useCase.run({ typeId: "type-a", data: "{}" });
+		const result = await useCase.run({ typeId: "type-a", data: "{}" });
 
-        expect(result.type).toBe(type);
-        expect(result.data).toBe("{}");
-        expect(modelsRepository.count()).toBe(1);
-    });
+		expect(result.type).toBe(type);
+		expect(result.data).toBe("{}");
+		expect(modelsRepository.count()).toBe(1);
+	});
 
-    it("should generate an id for the created entity", async () => {
-        const type = mockModelsType({ id: "type-a" });
-        typeRepository.seed([type]);
+	it("should generate an id for the created entity", async () => {
+		const type = mockModelsType({ id: "type-a" });
+		typeRepository.seed([type]);
 
-        const result = await useCase.run({ typeId: "type-a", data: "{}" });
+		const result = await useCase.run({ typeId: "type-a", data: "{}" });
 
-        expect(result.id).toBeString();
-    });
+		expect(result.id).toBeString();
+	});
 
-    it("should throw ResourceNotFoundException when the models type does not exist", async () => {
-        expect(
-            useCase.run({ typeId: "non-existent", data: "{}" }),
-        ).rejects.toBeInstanceOf(ResourceNotFoundException);
-    });
+	it("should throw ResourceNotFoundException when the models type does not exist", async () => {
+		expect(
+			useCase.run({ typeId: "non-existent", data: "{}" }),
+		).rejects.toBeInstanceOf(ResourceNotFoundException);
+	});
 
-    it("should throw InvalidPropertyException when data is invalid JSON", async () => {
-        const type = mockModelsType({ id: "type-a" });
-        typeRepository.seed([type]);
+	it("should throw InvalidPropertyException when data is invalid JSON", async () => {
+		const type = mockModelsType({ id: "type-a" });
+		typeRepository.seed([type]);
 
-        expect(
-            useCase.run({ typeId: "type-a", data: "not-json" }),
-        ).rejects.toBeInstanceOf(InvalidPropertyException);
-    });
+		expect(
+			useCase.run({ typeId: "type-a", data: "not-json" }),
+		).rejects.toBeInstanceOf(InvalidPropertyException);
+	});
 });

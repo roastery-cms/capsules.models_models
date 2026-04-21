@@ -22,7 +22,7 @@
       "devDependencies": {
         "@commitlint/cli": "^20.4.1",
         "@commitlint/config-conventional": "^20.4.1",
-        "@faker-js/faker": "^10.2.0",
+        "@faker-js/faker": "^10.4.0",
         "husky": "^9.1.7",
         "knip": "^6.0.3",
       },

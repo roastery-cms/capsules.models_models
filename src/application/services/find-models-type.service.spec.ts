@@ -8,40 +8,40 @@ import { FindModelsTypeService } from "./find-models-type.service";
 const emptySchema = JSON.stringify(t.Object({}));
 
 const mockModelsType = (overrides?: Partial<IModelsType>): IModelsType =>
-    ({
-        id: "type-id",
-        name: "Article",
-        slug: "article",
-        description: "An article model",
-        schema: { toString: () => emptySchema },
-        createdAt: new Date().toISOString(),
-        rename() {},
-        reslug() {},
-        changeDescription() {},
-        ...overrides,
-    }) as IModelsType;
+	({
+		id: "type-id",
+		name: "Article",
+		slug: "article",
+		description: "An article model",
+		schema: { toString: () => emptySchema },
+		createdAt: new Date().toISOString(),
+		rename() {},
+		reslug() {},
+		changeDescription() {},
+		...overrides,
+	}) as IModelsType;
 
 describe("FindModelsTypeService", () => {
-    let repository: ModelsTypeRepository;
-    let service: FindModelsTypeService;
+	let repository: ModelsTypeRepository;
+	let service: FindModelsTypeService;
 
-    beforeEach(() => {
-        repository = new ModelsTypeRepository();
-        service = new FindModelsTypeService(repository);
-    });
+	beforeEach(() => {
+		repository = new ModelsTypeRepository();
+		service = new FindModelsTypeService(repository);
+	});
 
-    it("should return the models type when it exists", async () => {
-        const type = mockModelsType({ id: "type-a" });
-        repository.seed([type]);
+	it("should return the models type when it exists", async () => {
+		const type = mockModelsType({ id: "type-a" });
+		repository.seed([type]);
 
-        const result = await service.run("type-a");
+		const result = await service.run("type-a");
 
-        expect(result).toBe(type);
-    });
+		expect(result).toBe(type);
+	});
 
-    it("should throw ResourceNotFoundException when the models type does not exist", async () => {
-        expect(service.run("non-existent")).rejects.toBeInstanceOf(
-            ResourceNotFoundException,
-        );
-    });
+	it("should throw ResourceNotFoundException when the models type does not exist", async () => {
+		expect(service.run("non-existent")).rejects.toBeInstanceOf(
+			ResourceNotFoundException,
+		);
+	});
 });

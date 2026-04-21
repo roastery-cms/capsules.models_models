@@ -7,28 +7,28 @@ import { Models } from "@/domain";
 import { EntitySource } from "@roastery/beans/entity/symbols";
 
 type MakeModelsTypeRepositoryArgs = {
-    target?: AggregatesRepositoryProviderDTO;
-    baseUrl?: string;
+	target?: AggregatesRepositoryProviderDTO;
+	baseUrl?: string;
 };
 
 export function makeModelsTypeRepository({
-    baseUrl,
-    target,
+	baseUrl,
+	target,
 }: MakeModelsTypeRepositoryArgs): IModelsTypeRepository {
-    const actions: Record<
-        NonNullable<typeof target>,
-        () => IModelsTypeRepository
-    > = {
-        API: () => new ApiModelsTypeRepository(baseUrl!),
-        MEMORY: () => new TestModelsTypeRepositoryForModels(),
-    };
+	const actions: Record<
+		NonNullable<typeof target>,
+		() => IModelsTypeRepository
+	> = {
+		API: () => new ApiModelsTypeRepository(baseUrl!),
+		MEMORY: () => new TestModelsTypeRepositoryForModels(),
+	};
 
-    if (!baseUrl && target !== undefined)
-        throw new InvalidEnvironmentException(
-            `${Models[EntitySource]}::type-repository`,
-        );
+	if (!baseUrl && target !== undefined)
+		throw new InvalidEnvironmentException(
+			`${Models[EntitySource]}::type-repository`,
+		);
 
-    if (!target) return actions.MEMORY();
+	if (!target) return actions.MEMORY();
 
-    return actions[target]();
+	return actions[target]();
 }

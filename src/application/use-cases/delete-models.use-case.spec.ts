@@ -11,48 +11,48 @@ import { DeleteModelsUseCase } from "./delete-models.use-case";
 const emptySchema = JSON.stringify(t.Object({}));
 
 const mockModelsType = (overrides?: Partial<IModelsType>): IModelsType =>
-    ({
-        id: "type-id",
-        name: "Article",
-        slug: "article",
-        description: "An article model",
-        schema: { toString: () => emptySchema },
-        createdAt: new Date().toISOString(),
-        rename() {},
-        reslug() {},
-        changeDescription() {},
-        ...overrides,
-    }) as IModelsType;
+	({
+		id: "type-id",
+		name: "Article",
+		slug: "article",
+		description: "An article model",
+		schema: { toString: () => emptySchema },
+		createdAt: new Date().toISOString(),
+		rename() {},
+		reslug() {},
+		changeDescription() {},
+		...overrides,
+	}) as IModelsType;
 
 const makeModels = (overrides?: Partial<IConstructorModels>): IModels =>
-    Models.make({
-        type: mockModelsType(),
-        data: "{}",
-        ...overrides,
-    });
+	Models.make({
+		type: mockModelsType(),
+		data: "{}",
+		...overrides,
+	});
 
 describe("DeleteModelsUseCase", () => {
-    let repository: ModelsRepository;
-    let useCase: DeleteModelsUseCase;
+	let repository: ModelsRepository;
+	let useCase: DeleteModelsUseCase;
 
-    beforeEach(() => {
-        repository = new ModelsRepository();
-        const findModelsById = new FindModelsByIdUseCase(repository);
-        useCase = new DeleteModelsUseCase(repository, findModelsById);
-    });
+	beforeEach(() => {
+		repository = new ModelsRepository();
+		const findModelsById = new FindModelsByIdUseCase(repository);
+		useCase = new DeleteModelsUseCase(repository, findModelsById);
+	});
 
-    it("should delete the models entity", async () => {
-        const models = makeModels();
-        repository.seed([models]);
+	it("should delete the models entity", async () => {
+		const models = makeModels();
+		repository.seed([models]);
 
-        await useCase.run(models.id);
+		await useCase.run(models.id);
 
-        expect(repository.count()).toBe(0);
-    });
+		expect(repository.count()).toBe(0);
+	});
 
-    it("should throw ResourceNotFoundException when entity does not exist", async () => {
-        expect(useCase.run("non-existent")).rejects.toBeInstanceOf(
-            ResourceNotFoundException,
-        );
-    });
+	it("should throw ResourceNotFoundException when entity does not exist", async () => {
+		expect(useCase.run("non-existent")).rejects.toBeInstanceOf(
+			ResourceNotFoundException,
+		);
+	});
 });

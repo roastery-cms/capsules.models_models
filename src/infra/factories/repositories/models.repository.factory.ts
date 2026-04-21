@@ -9,23 +9,23 @@ import { TestModelsRepository } from "@/infra/repositories/test";
 import { CachedModelsRepository } from "@/infra/repositories/cached";
 
 type MakeModelsRepositoryArgs = {
-    target?: ModelsRepositoryProviderDTO;
-    cache: BaristaCacheInstance;
-    prismaClient?: PrismaClient;
+	target?: ModelsRepositoryProviderDTO;
+	cache: BaristaCacheInstance;
+	prismaClient?: PrismaClient;
 };
 
 export function makeModelsRepository({
-    cache,
-    target,
-    prismaClient,
+	cache,
+	target,
+	prismaClient,
 }: MakeModelsRepositoryArgs) {
-    if (target === "PRISMA" && !prismaClient)
-        throw new ResourceNotFoundException(Models[EntitySource]);
+	if (target === "PRISMA" && !prismaClient)
+		throw new ResourceNotFoundException(Models[EntitySource]);
 
-    const repository =
-        target === "PRISMA" && prismaClient
-            ? new PrismaModelsRepository(prismaClient)
-            : new TestModelsRepository();
+	const repository =
+		target === "PRISMA" && prismaClient
+			? new PrismaModelsRepository(prismaClient)
+			: new TestModelsRepository();
 
-    return new CachedModelsRepository(repository, cache);
+	return new CachedModelsRepository(repository, cache);
 }

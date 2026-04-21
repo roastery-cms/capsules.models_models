@@ -5,18 +5,18 @@ import { EntitySource } from "@roastery/beans/entity/symbols";
 import { ResourceNotFoundException } from "@roastery/terroir/exceptions/application";
 
 export class FindModelsTypeService {
-    public constructor(
-        private readonly modelsTypeRepository: IModelsTypeRepository,
-    ) {}
+	public constructor(
+		private readonly modelsTypeRepository: IModelsTypeRepository,
+	) {}
 
-    public async run(id: string): Promise<IModelsType> {
-        const response = await this.modelsTypeRepository.findById(id);
+	public async run(id: string): Promise<IModelsType> {
+		const response = await this.modelsTypeRepository.findById(id);
 
-        if (!response)
-            throw new ResourceNotFoundException(
-                `${Models[EntitySource]}::type->${id}`,
-            );
+		if (!response)
+			throw new ResourceNotFoundException(
+				`${Models[EntitySource]}::type->${id}`,
+			);
 
-        return response;
-    }
+		return response;
+	}
 }

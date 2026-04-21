@@ -2,7 +2,7 @@ import { CountModelsByModelsTypeIdUseCase } from "@/application/use-cases";
 import type { IModelsReader } from "@/domain/types/repositories";
 
 export function makeCountModelsByModelsTypeIdUseCase(
-    reader: IModelsReader,
+	reader: IModelsReader,
 ): CountModelsByModelsTypeIdUseCase {
-    return new CountModelsByModelsTypeIdUseCase(reader);
+	return new CountModelsByModelsTypeIdUseCase(reader);
 }

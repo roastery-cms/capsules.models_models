@@ -2,7 +2,7 @@ import { FindModelsTypeService } from "@/application/services";
 import type { IModelsTypeRepository } from "@/domain/types/repositories";
 
 export function makeFindModelsTypeService(
-    modelsTypeRepository: IModelsTypeRepository,
+	modelsTypeRepository: IModelsTypeRepository,
 ): FindModelsTypeService {
-    return new FindModelsTypeService(modelsTypeRepository);
+	return new FindModelsTypeService(modelsTypeRepository);
 }

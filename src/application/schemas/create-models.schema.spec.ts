@@ -4,48 +4,48 @@ import { Schema } from "@roastery/terroir/schema";
 import { CreateModelsSchema } from "./create-models.schema";
 
 describe("CreateModelsSchema", () => {
-    it("should be an instance of Schema", () => {
-        expect(CreateModelsSchema).toBeInstanceOf(Schema);
-    });
+	it("should be an instance of Schema", () => {
+		expect(CreateModelsSchema).toBeInstanceOf(Schema);
+	});
 
-    it("should match a valid create DTO", () => {
-        expect(
-            CreateModelsSchema.match({
-                typeId: generateUUID(),
-                data: '{"readTime":5,"language":"pt-BR"}',
-            }),
-        ).toBe(true);
-    });
+	it("should match a valid create DTO", () => {
+		expect(
+			CreateModelsSchema.match({
+				typeId: generateUUID(),
+				data: '{"readTime":5,"language":"pt-BR"}',
+			}),
+		).toBe(true);
+	});
 
-    it("should not match when typeId is missing", () => {
-        expect(CreateModelsSchema.match({ data: "{}" })).toBe(false);
-    });
+	it("should not match when typeId is missing", () => {
+		expect(CreateModelsSchema.match({ data: "{}" })).toBe(false);
+	});
 
-    it("should not match when data is missing", () => {
-        expect(CreateModelsSchema.match({ typeId: generateUUID() })).toBe(false);
-    });
+	it("should not match when data is missing", () => {
+		expect(CreateModelsSchema.match({ typeId: generateUUID() })).toBe(false);
+	});
 
-    it("should not match when typeId is not a valid UUID", () => {
-        expect(
-            CreateModelsSchema.match({
-                typeId: "not-a-uuid",
-                data: "{}",
-            }),
-        ).toBe(false);
-    });
+	it("should not match when typeId is not a valid UUID", () => {
+		expect(
+			CreateModelsSchema.match({
+				typeId: "not-a-uuid",
+				data: "{}",
+			}),
+		).toBe(false);
+	});
 
-    it("should not match when data has less than 2 characters", () => {
-        expect(
-            CreateModelsSchema.match({
-                typeId: generateUUID(),
-                data: "{",
-            }),
-        ).toBe(false);
-    });
+	it("should not match when data has less than 2 characters", () => {
+		expect(
+			CreateModelsSchema.match({
+				typeId: generateUUID(),
+				data: "{",
+			}),
+		).toBe(false);
+	});
 
-    it("should not match non-object values", () => {
-        expect(CreateModelsSchema.match(null)).toBe(false);
-        expect(CreateModelsSchema.match("string")).toBe(false);
-        expect(CreateModelsSchema.match(123)).toBe(false);
-    });
+	it("should not match non-object values", () => {
+		expect(CreateModelsSchema.match(null)).toBe(false);
+		expect(CreateModelsSchema.match("string")).toBe(false);
+		expect(CreateModelsSchema.match(123)).toBe(false);
+	});
 });
